@@ -38,7 +38,7 @@ export default function Home() {
         <p className="text-xl text-green-700 mb-8">{t.subtitle}</p>
 
         <Link
-          href="/upload"
+          href="/crop-identification"
           className="bg-green-600 hover:bg-green-700 text-white text-2xl font-bold px-12 py-5 rounded-2xl flex items-center gap-3 mx-auto shadow-xl inline-block no-underline transition-all hover:scale-105"
         >
           <Camera className="w-7 h-7" />
