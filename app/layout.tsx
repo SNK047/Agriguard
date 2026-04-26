@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "AgriGuard",
   description: "AI Crop Disease Detector for Tamil Nadu Farmers",
   manifest: "/manifest.json",
+};
+
+export const viewport = {
   themeColor: "#22c55e",
 };
 
