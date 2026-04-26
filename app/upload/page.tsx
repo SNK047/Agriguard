@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, Upload, Camera, Leaf, Droplets, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
+import { 
+  ArrowLeft, Upload, Camera, Droplets, 
+  AlertTriangle, CheckCircle, Loader2, 
+  RefreshCw, ImageIcon
+} from "lucide-react";
 
 interface DiseaseResult {
   label: string;
@@ -10,12 +14,6 @@ interface DiseaseResult {
   crop: { english: string; tamil: string };
   confidence: number;
   advice: { english: string; tamil: string };
-  allPredictions?: Array<{
-    label: string;
-    score: number;
-    disease: { english: string; tamil: string };
-    crop: { english: string; tamil: string };
-  }>;
 }
 
 export default function UploadPage() {
@@ -25,58 +23,79 @@ export default function UploadPage() {
   const [result, setResult] = useState<DiseaseResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [language, setLanguage] = useState<"en" | "ta">("en");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const texts = {
     en: {
-      back: "Back to Home",
+      back: "Home",
       title: "Upload Leaf Photo",
-      placeholder: "Click below to choose photo",
-      chooseButton: "Choose Photo from Gallery",
-      detectButton: "Detect Disease Now",
+      placeholder: "Tap to select or drag & drop image",
+      chooseButton: "Select Image",
+      detectButton: "Analyze Crop",
       detecting: "Analyzing...",
       detectingDetailed: "AI is analyzing your plant...",
       crop: "Crop",
       advice: "Treatment Advice",
       confidence: "Confidence",
-      otherPossibilities: "Other Possibilities",
       errorTitle: "Detection Failed",
       errorRetry: "Try Again",
       healthy: "Plant is Healthy!",
-      unhealthy: "Disease Detected"
+      unhealthy: "Disease Detected",
+      selectFirst: "Please select an image first"
     },
     ta: {
-      back: "முகப்புக்கு திரும்பு",
-      title: "இலை புகைப்படத்தை பதிவேற்றவும்",
-      placeholder: "புகைப்படத்தை தேர்ந்தெடுக்க கீழே கிளிக் செய்யவும்",
-      chooseButton: "கேலரியில் இருந்து புகைப்படத்தை தேர்ந்தெடுக்கவும்",
-      detectButton: "நோயை கண்டறியவும்",
+      back: "முகப்பு",
+      title: "இலை புகைப்படம்",
+      placeholder: "தட்டவும் அல்லது இழுக்கவும்",
+      chooseButton: "படத்தைத் தேர்வுசெய்",
+      detectButton: "பகுப்பாய்வு செய்",
       detecting: "விவிச்சித்தல்...",
       detectingDetailed: "AI உங்கள் செடியை விவிச்சித்துக் கொண்டிருக்கிறது...",
       crop: "பயிர்",
       advice: "சிகிச்சை ஆலோசனை",
       confidence: "நம்பகத்தன்மை",
-      otherPossibilities: "மறை возможности",
       errorTitle: "கண்டறிய முடியவில்லை",
-      errorRetry: "மீண்டும் முயற்சிக்கவும்",
+      errorRetry: "மீண்டும் முயற்சி",
       healthy: "செடி ஆரோக்கியமாக உள்ளது!",
-      unhealthy: "நோய் கண்டறியப்பட்டது"
+      unhealthy: "நோய் கண்டறியப்பட்டது",
+      selectFirst: "முதலில் ஒரு படத்தைத் தேர்வுசெய்யவும்"
     }
   };
 
   const t = texts[language];
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setSelectedImage(URL.createObjectURL(selectedFile));
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setSelectedImage(imageUrl);
+      setResult(null);
+      setError(null);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setFile(droppedFile);
+      const imageUrl = URL.createObjectURL(droppedFile);
+      setSelectedImage(imageUrl);
       setResult(null);
       setError(null);
     }
   };
 
   const detectDisease = async () => {
-    if (!file) return;
+    if (!file) {
+      setError(t.selectFirst);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -105,22 +124,25 @@ export default function UploadPage() {
     }
   };
 
-  const isHealthy = result && (result.disease.english.toLowerCase().includes("healthy") || result.confidence < 30);
+  const isHealthy = result && (
+    result.disease.english.toLowerCase().includes("healthy") || 
+    result.confidence < 30
+  );
 
   return (
-    <div className="min-h-screen bg-green-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 p-4">
       <div className="flex justify-between items-center mb-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors no-underline"
+        <Link 
+          href="/" 
+          className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors no-underline font-medium"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">{t.back}</span>
+          {t.back}
         </Link>
         <div className="flex gap-2">
           <button
             onClick={() => setLanguage("en")}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               language === "en"
                 ? "bg-green-600 text-white"
                 : "bg-white text-green-600 hover:bg-green-100"
@@ -130,7 +152,7 @@ export default function UploadPage() {
           </button>
           <button
             onClick={() => setLanguage("ta")}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               language === "ta"
                 ? "bg-green-600 text-white"
                 : "bg-white text-green-600 hover:bg-green-100"
@@ -141,10 +163,15 @@ export default function UploadPage() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto bg-white rounded-3xl shadow-xl p-6">
+      <div className="max-w-md mx-auto bg-white/80 backdrop-blur rounded-3xl shadow-xl p-6">
         <h1 className="text-3xl font-bold text-center text-green-800 mb-6">{t.title}</h1>
 
-        <div className="border-2 border-dashed border-green-300 rounded-2xl h-80 flex items-center justify-center overflow-hidden bg-gray-50">
+        <div 
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className="border-3 border-dashed border-green-300 rounded-2xl h-72 flex items-center justify-center overflow-hidden bg-gray-50 cursor-pointer hover:bg-green-50 hover:border-green-400 transition-all"
+        >
           {selectedImage ? (
             <img
               src={selectedImage}
@@ -153,33 +180,33 @@ export default function UploadPage() {
             />
           ) : (
             <div className="text-center p-4">
-              <Upload className="w-16 h-16 mx-auto text-green-400 mb-3" />
-              <p className="text-green-600">{t.placeholder}</p>
+              <ImageIcon className="w-16 h-16 mx-auto text-green-400 mb-3" />
+              <p className="text-green-600 font-medium">{t.placeholder}</p>
             </div>
           )}
         </div>
 
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
+          onChange={handleImageSelect}
           className="hidden"
-          id="file-upload"
         />
 
-        <label
-          htmlFor="file-upload"
-          className="block bg-green-100 hover:bg-green-200 text-green-700 font-medium py-4 text-center rounded-2xl mt-4 cursor-pointer flex items-center justify-center gap-2 transition-colors"
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full mt-4 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors"
         >
           <Camera className="w-5 h-5" />
           {t.chooseButton}
-        </label>
+        </button>
 
         {selectedImage && (
           <button
             onClick={detectDisease}
             disabled={loading}
-            className="w-full mt-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white py-4 rounded-2xl font-medium text-lg flex items-center justify-center gap-2 transition-all"
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
           >
             {loading ? (
               <>
@@ -188,7 +215,7 @@ export default function UploadPage() {
               </>
             ) : (
               <>
-                <Leaf className="w-5 h-5" />
+                <RefreshCw className="w-5 h-5" />
                 {t.detectButton}
               </>
             )}
@@ -196,28 +223,19 @@ export default function UploadPage() {
         )}
 
         {error && (
-          <div className="mt-6 p-5 bg-red-50 rounded-2xl border border-red-200">
+          <div className="mt-5 p-4 bg-red-50 rounded-2xl border border-red-200">
             <div className="flex items-center gap-2 text-red-700 mb-2">
               <AlertTriangle className="w-5 h-5" />
               <h2 className="font-bold">{t.errorTitle}</h2>
             </div>
             <p className="text-red-600 text-sm">{error}</p>
-            <button
-              onClick={() => setError(null)}
-              className="mt-3 text-sm text-red-600 hover:text-red-700 underline"
-            >
-              {t.errorRetry}
-            </button>
           </div>
         )}
 
         {result && (
-          <div className="mt-6 space-y-4">
-            {/* Main Result */}
+          <div className="mt-5 space-y-4">
             <div className={`rounded-2xl p-5 border-2 ${
-              isHealthy
-                ? "bg-green-50 border-green-300"
-                : "bg-red-50 border-red-300"
+              isHealthy ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
             }`}>
               <div className="flex items-center gap-2 mb-2">
                 {isHealthy ? (
@@ -249,11 +267,10 @@ export default function UploadPage() {
                     style={{ width: `${result.confidence}%` }}
                   />
                 </div>
-                <span className="font-bold text-gray-700">{result.confidence}%</span>
+                <span className="font-bold text-gray-700 min-w-[45px]">{result.confidence}%</span>
               </div>
             </div>
 
-            {/* Treatment Advice - Darker */}
             <div className="rounded-2xl p-5 bg-gray-900 border border-gray-700">
               <div className="flex items-center gap-2 mb-3">
                 <Droplets className="w-5 h-5 text-green-400" />
@@ -263,28 +280,6 @@ export default function UploadPage() {
                 {language === "en" ? result.advice.english : result.advice.tamil}
               </p>
             </div>
-
-            {/* Other Possibilities */}
-            {result.allPredictions && result.allPredictions.length > 1 && (
-              <div className="rounded-2xl p-5 bg-white border border-gray-200">
-                <h3 className="font-bold text-gray-700 mb-3">{t.otherPossibilities}</h3>
-                <div className="space-y-2">
-                  {result.allPredictions.slice(1, 4).map((pred, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
-                    >
-                      <span className="text-sm text-gray-700">
-                        {language === "en" ? pred.disease.english : pred.disease.tamil}
-                      </span>
-                      <span className="text-sm font-medium text-gray-500">
-                        {pred.score}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Camera, Leaf } from "lucide-react";
+import { Camera, Leaf, CloudRain, Globe } from "lucide-react";
 
 export default function Home() {
   const [language, setLanguage] = useState<"en" | "ta">("en");
@@ -10,52 +10,65 @@ export default function Home() {
   const texts = {
     en: {
       title: "AgriGuard",
-      subtitle: "AI Crop Disease Detector for Tamil Nadu Farmers",
-      button: "Upload Crop Photo",
-      tagline: "Helpful for Paddy, Groundnut, Sugarcane & more",
-      weatherTitle: "Today's Weather Tip",
+      subtitle: "AI Crop Disease Detector",
+      button: "Get Started",
+      tagline: "Detect diseases in paddy, groundnut, sugarcane & more",
+      weatherTitle: "Today's Weather",
       weatherInfo: "Villupuram: Rain expected - delay spraying",
       weatherAdvice: "Check local weather before applying pesticides"
     },
     ta: {
       title: "அக்ரிகார்ட்",
-      subtitle: "தமிழ்நாடு விவசாயிகளுக்கான AI பயிர் நோய் கண்டறியும் கருவி",
-      button: "பயிர் புகைப்படத்தை பதிவேற்றவும்",
-      tagline: "நெல், வேர்க்கடலை, கரும்பு மற்றும் பலவற்றுக்கு உதவியாக",
-      weatherTitle: "இன்றைய வானில் குறிப்பு",
-      weatherInfo: "விழுப்புரம்: மழை எதிர்பார்க்கப்படுகிறது - தெளிப்பை தாமதப்படுத்துங்கள்",
-      weatherAdvice: "பூச்சிக்கொல்லைப் பயன்படுத்துவதற்கு முன் உள்ளூர்வானிலையை சரிபார்க்கவும்"
+      subtitle: "AI பயிர் நோய் கண்டறியும்",
+      button: "தொடக்கு",
+      tagline: "நெல், வேர்க்கடலை, கரும்பு மற்றும் பலவற்றில் நோய் கண்டறியலாம்",
+      weatherTitle: "இன்றைய வானம்",
+      weatherInfo: "விழுப்புரம்: மழை எதிர்பார்க்கப்படுகிறது",
+      weatherAdvice: "பூச்சிக்கொல்லைத் தெளிக்கத் தடைவதைத் தவிர்க்கவும்"
     }
   };
 
   const t = texts[language];
 
   return (
-    <div className="min-h-screen bg-green-50 flex flex-col items-center justify-center p-4">
-      <div className="text-center max-w-md">
-        <Leaf className="w-20 h-20 mx-auto text-green-600 mb-4" />
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex flex-col items-center justify-center p-4">
+      <div className="text-center max-w-md w-full">
+        <Leaf className="w-24 h-24 mx-auto text-green-600 mb-4 animate-pulse" />
         <h1 className="text-5xl font-bold text-green-800 mb-2">{t.title}</h1>
         <p className="text-xl text-green-700 mb-8">{t.subtitle}</p>
 
         <Link
           href="/upload"
-          className="bg-green-600 hover:bg-green-700 text-white text-xl font-medium px-10 py-4 rounded-2xl flex items-center gap-3 mx-auto shadow-lg inline-block no-underline"
+          className="bg-green-600 hover:bg-green-700 text-white text-2xl font-bold px-12 py-5 rounded-2xl flex items-center gap-3 mx-auto shadow-xl inline-block no-underline transition-all hover:scale-105"
         >
-          <Camera className="w-6 h-6" />
+          <Camera className="w-7 h-7" />
           {t.button}
         </Link>
 
-        <p className="mt-6 text-green-600">{t.tagline}</p>
+        <p className="mt-6 text-green-600 font-medium">{t.tagline}</p>
 
-        <div className="mt-8 bg-white rounded-xl p-4 shadow-md border border-green-200">
-          <h3 className="text-lg font-semibold text-green-800 mb-2">{t.weatherTitle}</h3>
-          <p className="text-green-700 font-medium">{t.weatherInfo}</p>
+        <div className="mt-8 bg-white/80 backdrop-blur rounded-2xl p-5 shadow-lg border border-green-200">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <CloudRain className="w-5 h-5 text-green-600" />
+            <h3 className="text-lg font-bold text-green-800">{t.weatherTitle}</h3>
+          </div>
+          <p className="text-green-700 font-semibold">{t.weatherInfo}</p>
           <p className="text-sm text-green-600 mt-1">{t.weatherAdvice}</p>
         </div>
 
-        <div className="mt-8 flex justify-center gap-4">
-          <button onClick={() => setLanguage("en")} className={`px-4 py-2 rounded-full ${language === "en" ? "bg-green-600 text-white" : "bg-white"}`}>English</button>
-          <button onClick={() => setLanguage("ta")} className={`px-4 py-2 rounded-full ${language === "ta" ? "bg-green-600 text-white" : "bg-white"}`}>தமிழ்</button>
+        <div className="mt-8 flex justify-center gap-3">
+          <button 
+            onClick={() => setLanguage("en")} 
+            className={`px-5 py-2 rounded-full font-medium transition-all ${language === "en" ? "bg-green-600 text-white shadow-lg" : "bg-white text-green-600 hover:bg-green-50"}`}
+          >
+            English
+          </button>
+          <button 
+            onClick={() => setLanguage("ta")} 
+            className={`px-5 py-2 rounded-full font-medium transition-all ${language === "ta" ? "bg-green-600 text-white shadow-lg" : "bg-white text-green-600 hover:bg-green-50"}`}
+          >
+            தமிழ்
+          </button>
         </div>
       </div>
     </div>
