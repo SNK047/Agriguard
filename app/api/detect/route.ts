@@ -377,6 +377,13 @@ function mapLabelToDiseaseInfo(label: string): DiseaseInfo {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!HF_API_KEY) {
+      return NextResponse.json(
+        { error: "API key not configured. Please add HF_API_KEY in Vercel environment variables." },
+        { status: 500 }
+      );
+    }
+    
     const formData = await request.formData();
     const file = formData.get("image") as File | null;
     
