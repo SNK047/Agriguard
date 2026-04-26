@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Camera, Leaf } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
   const [language, setLanguage] = useState<"en" | "ta">("en"); // en = English, ta = Tamil
 
   const texts = {
@@ -37,8 +39,8 @@ export default function Home() {
         <p className="text-xl text-green-700 mb-8">{t.subtitle}</p>
 
         <button
-          onClick={() => window.location.href = "/upload"}
-          className="bg-green-600 hover:bg-green-700 text-white text-xl font-medium px-10 py-4 rounded-2xl flex items-center gap-3 mx-auto shadow-lg"
+          onClick={() => router.push("/upload")}
+          className="bg-green-600 hover:bg-green-700 text-white text-xl font-medium px-10 py-4 rounded-2xl flex items-center gap-3 mx-auto shadow-lg cursor-pointer"
         >
           <Camera className="w-6 h-6" />
           {t.button}
