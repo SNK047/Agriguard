@@ -10,7 +10,7 @@ export default function Home() {
   const texts = {
     en: {
       title: "AgriGuard",
-      subtitle: "AI Crop Disease Detector",
+      subtitle: "AI Crop Disease Detector for Tamil Nadu",
       button: "Get Started",
       tagline: "Detect diseases in paddy, groundnut, sugarcane & more",
       weatherTitle: "Today's Weather",
