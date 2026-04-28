@@ -1,0 +1,14 @@
+name = "agriguard"
+type = "webpack"
+account_id = "70cd67d8c522bcc03edd4bed6bccf350"
+
+[site]
+  bucket = "./.next"
+
+[vars]
+  NEXT_PUBLIC_SUPABASE_URL = "https://czybrkkwbvgjubshouwm.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6eWJya2t3YnZnanVic2hvd20iLCJpYXQiOjE3NzcyMDU5OTIsImV4cCI6MjA5Mjc4MTk5Mn0.Xo4AaOq2MbaIKhU6MMS-2qvEUYagSMMBD5gic9w3mJY"
+
+[build]
+  command = "npm run build"
+  cwd = "."
